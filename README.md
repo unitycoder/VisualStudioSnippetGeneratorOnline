@@ -1,4 +1,3 @@
-# VisualStudioSnippetGeneratorOnline
-sources for the online vs snippet generator
+# Visual Studio Snippet Generator
 
-http://tools.unitycoder.com/VisualStudioSnippetsGenerator/
+The Source of [Visual Studio Snippet Generator Website](http://tools.unitycoder.com/VisualStudioSnippetsGenerator/).
