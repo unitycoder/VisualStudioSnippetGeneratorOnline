@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Visual Studio Snippet Generator - JSFiddle</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/ace.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-xml.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/theme-monokai.js"></script>
+      <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+
+  <style type="text/css">
+    * {
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+body {
+  text-align:center;
+	font-family: 'Open Sans', sans-serif;
+	line-height: 1.75em;
+	font-size: 13px;
+	background-color: #222;
+	color: #aaa;
+}
+
+p {
+	font-size: 16px;
+}
+
+h1 {
+	font-size: 30px;
+	line-height: 34px;
+}
+
+h2 {
+	font-size: 20px;
+	line-height: 25px;
+}
+
+h3 {
+	font-size: 16px;
+	line-height: 27px;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #D8D8D8;
+	border-top: 1px solid #D8D8D8;
+}
+
+hr {
+	height: 1px;
+	background-color: #d8d8d8;
+	border: none;
+	width: 100%;
+	margin: 0px;
+}
+
+a[href] {
+	color: #1e8ad6;
+}
+
+a[href]:hover {
+	color: #3ba0e6;
+}
+
+img {
+	max-width: 100%;
+}
+
+li {
+	line-height: 1.5em;
+}
+
+button {
+  color: #fff;
+  background-color: #6496c8;
+  text-shadow: -1px 1px #417cb8;
+  border: none;
+  margin: 4px 0 4px 0;
+  padding: 4px;
+}
+
+button:hover,
+button.hover {
+  background-color: #346392;
+  text-shadow: -1px 1px #27496d;
+}
+
+button:active,
+button.active {
+  background-color: #27496d;
+  text-shadow: -1px 1px #193047;
+}
+
+#snippetOutput
+{
+  font: 12px Courier New, monospace;
+  color:#ffffff;
+  background-color:#1e1e1e;
+    -moz-tab-size : 2;
+      -o-tab-size : 2;
+         tab-size : 2;
+}
+
+#editor { 
+    width:650px;
+    height:350px;
+    border:1px solid #aaaaaa;
+    margin: auto;
+}
+  </style>
+  
+</head>
+<body>
+  <h4>==[ VisualStudio Snippet Generator 9000 ]==</h4>
+<!--Title:<input type="text" id="title" value="dbl" size="4" title="Specifies the title for the code snippet. The title stored in the Title element of the code snippet appears in the Code Snippet Picker and in the code snippet's description in the Code Snippets Manager">-->
+Shortcut:<input type="text" id="shortcut" value="dbl" size="4" title="Specifies the shortcut text used to insert the snippet. The text value of a Shortcut element can only contain alphanumeric characters, hyphens - and underscores _"><br>
+Description:<input type="text" id="description" value="Code snippet for Debug.Log()" size="32" title="Specifies descriptive information about the contents of an IntelliSense Code Snippet"><br>
+Author:<input type="text" id="author" value="" size="12" title="Optional element. The name of the person or company that authored the code snippet"><br>
+<!--Snippettype:<input type="text" id="snippettype" value="Expansion" size="8" title="Optional element. Groups SnippetType elements"><br>
+Editable:<input type="checkbox" id="editable" checked="true" title="Optional Boolean attribute. Specifies whether or not you can edit the literal after the code snippet is inserted. The default value of this attribute is true"><br>-->
+Code:<textarea rows="2" cols="50" id="code" title="Required element. Contains the code that will be inserted by Visual Studio">Debug.Log("$end$");</textarea> 
+
+<br>
+ <hr>
+* <i>$end$</i> marks the location to place the cursor after the code snippet is inserted<br>
+* <i>$selected$</i> represents text selected in the document that is to be inserted into the snippet when it is invoked<br>
+
+<button type="button" onclick="Generate()">Generate</button>
+<button type="button" onclick="Copy()">Copy</button>
+<button type="button" onclick="Download()">Download</button><br>
+
+<div id="editor"></div>
+
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/xml");
+</script>
+
+<br>
+Links<br>
+- <a href="https://msdn.microsoft.com/en-us/library/ms171418.aspx" target="_blank">Code Snippets Schema Reference</a>
+- <a href="https://github.com/unitycoder/UnityVisualStudioSnippets" target="_blank">Github UnitySnippets</a>
+- <a href="https://jsfiddle.net/unitycoder/mfsa92tw/" target="_blank">JSFiddle Source</a><br>
+<a href="http://tools.unitycoder.com/">&lt;Back to tools page</a>
+
+    <script type="text/javascript">
+
+    //<![CDATA[
+        var template = '<?xml version="1.0" encoding="utf-8" ?>\n\
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">\n\
+	<CodeSnippet Format="1.0.0">\n\
+		<Header>\n\
+			<Title>##TITLE##</Title>\n\
+			<Shortcut>##SHORTCUT##</Shortcut>\n\
+			<Description>##DESCRIPTION##</Description>\n\
+			<Author>##AUTHOR##</Author>\n\
+		</Header>\n\
+		<Snippet>\n\
+			<Declarations>\n\
+				<Literal Editable="false">\n\
+        </Literal>\n\
+			</Declarations>\n\
+			<Code Language="csharp"><![CDATA[##CODE##]]>\n\
+			</Code>\n\
+		</Snippet>\n\
+	</CodeSnippet>\n\
+</CodeSnippets>'
+
+var titleTag = "##TITLE##";
+var shortcutTag = "##SHORTCUT##";
+var descriptionTag = "##DESCRIPTION##";
+var authorTag = "##AUTHOR##";
+//var snippetTypeTag = "##SNIPPETTYPE##";
+//var defaultValueTag = "##DEFAULTVALUE##";
+var editableTag = "##EDITABLE##";
+var codeTag = "##CODE##";
+
+var editor = ace.edit("editor");
+
+function Download()
+{
+	if (editor.getValue()=="")
+  {
+    // alert("Nothing to download..");
+  	return;
+  }
+  DownloadAsTextFile(GetVal("shortcut")+".snippet",editor.getValue());
+}
+
+function Copy()
+{
+  editor.focus();
+  editor.selectAll();
+  try 
+  {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
+  } catch (err) {
+    console.log('Oops, unable to copy');
+  }
+}
+
+function Generate()
+{
+//  var title = GetVal("title");
+  var shortcut = GetVal("shortcut");
+  var description = GetVal("description");
+  var author = GetVal("author");
+//  var snippetType = GetVal("snippettype");
+  var code = GetVal("code");
+//  var defaultvalue = GetVal("defaultvalue");
+//  var editable = GetCheckbox("editable");
+
+	var out = document.getElementById("editor");
+  var d = template;
+  
+  // replace tags
+//  d = d.replace(titleTag, title);
+  d = d.replace(titleTag, shortcut);
+  d = d.replace(shortcutTag, shortcut);
+  d = d.replace(descriptionTag, description);
+  d = d.replace(authorTag, author);
+//  d = d.replace(snippetTypeTag, snippetType);
+//  d = d.replace(editableTag, editable);
+
+  // add end-point to end of string if there is none
+  if (code.indexOf("$end$")==-1)
+  {
+  	d = d.replace(codeTag, code+"$end$");
+  }else{
+		d = d.replace(codeTag, code);
+  }
+  
+	editor.setValue(d);
+}
+
+function GetVal(id)
+{
+	if (document.getElementById(id)==null) 
+  {
+  	console.log("Missing element: "+id);
+  	return null;
+  }
+	return document.getElementById(id).value;
+}
+
+function GetCheckbox(id)
+{
+	if (document.getElementById(id)==null) 
+  {
+  	console.log("Missing element: "+id);
+  	return null;
+  }
+	return document.getElementById(id).checked;
+}
+
+// https://stackoverflow.com/a/18197341/5452781
+function DownloadAsTextFile(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+}
+    //]]>
+
+</script>
+
+  <script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent){
+      window.parent.parent.postMessage(["resultsFrame", {
+        height: document.body.getBoundingClientRect().height,
+        slug: "mfsa92tw"
+      }], "*")
+    }
+  </script>
+</body>
+</html>
