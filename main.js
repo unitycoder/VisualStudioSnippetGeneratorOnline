@@ -30,8 +30,15 @@ var template = `<?xml version="1.0" encoding="utf-8" ?>
  */
 var tags = [
   {
+    replace: "##TITLE##",
+    id: "shortcut",
+    value: "",
+    getValue: function (value) {
+      return value;
+    }
+  }, {
     replace: "##SHORTCUT##",
-    id: "shorcut",
+    id: "shortcut",
     value: "",
     getValue: function (value) {
       return value;
